@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para o Meu Amor</title>
+    <style>
+        /* CSS INLINE - Estilos para a página */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #09204e; /* Azul escuro quase roxo */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Esconde barras de rolagem se os corações saírem da tela */
+            position: relative; /* Para o posicionamento absoluto dos corações */
+        }
+
+        /* Container de Introdução (Botão de Clique) */
+        #intro-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            background-color: #09204e;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 100; /* Garante que fique por cima */
+            transition: opacity 0.5s ease-out; /* Transição para sumir */
+        }
+
+        #startButton {
+            padding: 18px 40px;
+            font-size: 28px;
+            background-color: #ff4d4d; /* Cor vermelha de coração */
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        #startButton:hover {
+            background-color: #ff1a1a;
+            transform: translateY(-2px);
+        }
+
+        #startButton:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Container Principal do Conteúdo */
+        #content-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px; /* Espaçamento entre os elementos */
+            padding: 20px;
+            max-width: 420px; /* Largura máxima para celulares */
+            width: 90%; /* Ocupa 90% da largura disponível */
+            box-sizing: border-box;
+            position: relative;
+            opacity: 0; /* Começa invisível para uma transição suave */
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            pointer-events: none; /* Inativo até ficar visível */
+        }
+
+        #content-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all; /* Ativo quando visível */
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Player de Música */
+        .music-player {
+            background-color: rgba(255, 255, 255, 0.1); /* Fundo translúcido */
+            border-radius: 18px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px); /* Efeito de blur no fundo */
+        }
+
+        .music-player .album-art img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .music-player .song-info {
+            flex-grow: 1;
+        }
+
+        .music-player .song-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 3px;
+            color: #f0f0f0;
+        }
+
+        .music-player .artist {
+            font-size: 0.95em;
+            color: #c0c0c0;
+        }
+
+        .music-player .controls {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 1.6em;
+            color: #ddd;
+        }
+
+        .music-player .controls span {
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .music-player .controls span:hover {
+            color: #eee;
+        }
+
+        .music-player .play-icon {
+            font-size: 2.5em;
+            color: #ff4d4d; /* Vermelho do botão de play */
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .music-player .play-icon:hover {
+            transform: scale(1.05);
+        }
+
+        /* Container da Imagem Principal (para o Carrossel) */
+        .main-image-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 177.77%; /* (16 / 9) * 100% para manter a proporção */
+            border-radius: 25px;
+            overflow: hidden;
+            background-color: #333; /* Fundo placeholder */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .main-image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: opacity 0.5s ease-in-out; /* Transição para o efeito de fade do carrossel */
+        }
+
+        /* Seção do Contador de Amor */
+        .love-counter-section {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.08); /* Fundo sutil */
+            border-radius: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .love-message {
+            font-size: 1.3em;
+            color: #ff69b4; /* Cor de coração rosa */
+            margin-bottom: 8px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .timer-display {
+            font-size: 1.7em;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Partículas de Coração */
+        .heart {
+            position: absolute;
+            background-color: #ff69b4; /* Cor de coração rosa */
+            transform: rotate(-45deg);
+            animation: fallDown 5s infinite ease-out; /* Animação para DESCER */
+            opacity: 0;
+            pointer-events: none; /* Não interfere com os cliques */
+            z-index: 0; /* Fica por trás do conteúdo */
+        }
+
+        .heart:before,
+        .heart:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: inherit;
+            border-radius: 50%;
+        }
+
+        .heart:before {
+            top: -50%;
+            left: 0;
+        }
+
+        .heart:after {
+            left: 50%;
+            top: 0;
+        }
+
+        /* Animação para os corações realmente DESCEREM do topo da tela */
+        @keyframes fallDown {
+            0% {
+                transform: translateY(-100px) rotate(-45deg); /* Começa 100px acima da tela */
+                opacity: 0;
+            }
+            10% { /* Fica visível pouco depois de começar a cair */
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8; /* Permanece visível na maior parte do caminho */
+            }
+            100% {
+                transform: translateY(100vh) rotate(-45deg); /* Cai completamente para fora da tela */
+                opacity: 0; /* Some */
+            }
+        }
+
+        /* Responsividade Básica (para telas menores que 480px) */
+        @media (max-width: 480px) {
+            #startButton {
+                padding: 15px 30px;
+                font-size: 24px;
+            }
+
+            #content-container {
+                padding: 15px;
+                gap: 20px;
+            }
+
+            .music-player {
+                padding: 10px 12px;
+            }
+
+            .music-player .album-art img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .music-player .song-title {
+                font-size: 1.1em;
+            }
+
+            .music-player .artist {
+                font-size: 0.9em;
+            }
+
+            .music-player .controls {
+                font-size: 1.4em;
+                gap: 12px;
+            }
+
+            .music-player .play-icon {
+                font-size: 2em;
+            }
+
+            .love-message {
+                font-size: 1.1em;
+            }
+
+            .timer-display {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-container">
+        <button id="startButton">❤️ Clique Aqui</button>
+    </div>
+
+    <div id="content-container" class="hidden">
+        <div class="music-player">
+            <div class="album-art">
+                <!-- Certifique-se de ter uma imagem chamada album_art.png na mesma pasta -->
+                <img src="600x600bf-60.jpg" alt="Capa do Álbum">
+            </div>
+            <div class="song-info">
+                <div class="song-title">BB (garupa de moto amarela)</div>
+                <div class="artist">Tim Bernardes</div>
+            </div>
+            <div class="controls">
+                <!-- Ícone de Play/Pause -->
+                <span id="playPauseIcon" class="play-icon">▶</span>
+            </div>
+        </div>
+
+        <div class="main-image-container">
+            <!-- Esta imagem será atualizada pelo JavaScript para o carrossel -->
+            <img id="carouselImage" src="15A26687-6D40-418D-93D4-0E9275AC8BD9.jpg" alt="Nossas Fotos Especiais">
+        </div>
+
+        <div class="love-counter-section">
+            <p class="love-message">❤️ Eu te amo há:</p>
+            <p id="love-timer" class="timer-display"></p>
+        </div>
+    </div>
+
+    <!-- Elemento de Áudio - Adicionado para tocar a música -->
+    <!-- ATENÇÃO: SUBSTITUA 'sua_musica.mp3' pelo nome do seu arquivo de música real -->
+    <!-- Coloque o arquivo de música na mesma pasta do seu arquivo HTML -->
+    <audio id="backgroundMusic" loop>
+        <source src="Tim Bernardes - BB (Garupa de Moto Amarela).mp3" type="audio/mpeg">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
+
+    <script>
+        // JAVASCRIPT INLINE - Lógica da página
+        document.addEventListener('DOMContentLoaded', () => {
+            const startButton = document.getElementById('startButton');
+            const introContainer = document.getElementById('intro-container');
+            const contentContainer = document.getElementById('content-container');
+            const loveTimer = document.getElementById('love-timer');
+            const backgroundMusic = document.getElementById('backgroundMusic'); // Referência ao elemento de áudio
+            const playPauseIcon = document.getElementById('playPauseIcon'); // Referência ao ícone de play/pause
+
+            const startDate = new Date(2025, 0, 31, 0, 0, 0);
+
+            const carouselImages = [
+                '15A26687-6D40-418D-93D4-0E9275AC8BD9.jpg', //primeira foto
+                'WhatsApp Image 2025-06-10 at 15.58.00_4cf1578f.jpg', //segunda foto
+                'WhatsApp Image 2025-06-10 at 15.58.41_e8910e63.jpg'  //terceira foto
+            ];
+            let currentImageIndex = 0;
+            const carouselImageElement = document.getElementById('carouselImage');
+
+            // Função para mudar a imagem do carrossel
+            function showNextCarouselImage() {
+                carouselImageElement.style.opacity = '0';
+
+                setTimeout(() => {
+                    currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
+                    carouselImageElement.src = carouselImages[currentImageIndex];
+                    carouselImageElement.alt = `Nossas Fotos Especiais - ${currentImageIndex + 1}`;
+                    carouselImageElement.style.opacity = '1';
+                }, 500);
+            }
+
+            // Lógica de Play/Pause da Música
+            playPauseIcon.addEventListener('click', () => {
+                if (backgroundMusic.paused) {
+                    backgroundMusic.play().catch(error => {
+                        console.error("Erro ao tentar tocar a música:", error);
+                        // Mensagem amigável para o usuário, se quiser
+                        // alert("Não foi possível tocar a música. Talvez o navegador precise de uma interação inicial do usuário.");
+                    });
+                    playPauseIcon.textContent = '⏸'; // Mudar para ícone de pause
+                } else {
+                    backgroundMusic.pause();
+                    playPauseIcon.textContent = '▶'; // Mudar para ícone de play
+                }
+            });
+
+            startButton.addEventListener('click', () => {
+                introContainer.style.opacity = '0';
+                introContainer.style.pointerEvents = 'none';
+
+                setTimeout(() => {
+                    introContainer.classList.add('hidden');
+                    contentContainer.classList.remove('hidden');
+                    contentContainer.classList.add('visible');
+
+                    startLoveCounter();
+                    startHeartParticles();
+
+                    // Tenta tocar a música automaticamente após o clique inicial do botão
+                    // Alguns navegadores bloqueiam autoplay sem interação do usuário
+                    backgroundMusic.play().catch(error => {
+                        console.warn("Autoplay bloqueado. A música pode precisar ser iniciada manualmente.", error);
+                        // Você pode adicionar um aviso visual aqui se quiser
+                    });
+                    playPauseIcon.textContent = '⏸'; // Define o ícone como pause se a tentativa de play for bem-sucedida
+
+                    setInterval(showNextCarouselImage, 5000);
+                }, 500);
+            });
+
+            function startLoveCounter() {
+                function updateLoveTimer() {
+                    const now = new Date();
+                    const diff = now.getTime() - startDate.getTime();
+
+                    const seconds = Math.floor(diff / 1000);
+                    const minutes = Math.floor(seconds / 60);
+                    const hours = Math.floor(minutes / 60);
+                    const days = Math.floor(hours / 24);
+
+                    let years = 0;
+                    let tempDate = new Date(startDate);
+
+                    while (true) {
+                        let nextYearDate = new Date(tempDate.getFullYear() + 1, tempDate.getMonth(), tempDate.getDate(), tempDate.getHours(), tempDate.getMinutes(), tempDate.getSeconds());
+                        if (nextYearDate.getTime() <= now.getTime()) {
+                            years++;
+                            tempDate = nextYearDate;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    const diffAfterYears = now.getTime() - tempDate.getTime();
+                    const daysAfterYears = Math.floor(diffAfterYears / (1000 * 60 * 60 * 24));
+
+                    const remainingHours = hours % 24;
+                    const remainingMinutes = minutes % 60;
+                    const remainingSeconds = seconds % 60;
+
+                    loveTimer.textContent = `${years} anos, ${daysAfterYears} dias, ${remainingHours} horas, ${remainingMinutes} minutos e ${remainingSeconds} segundos`;
+                }
+
+                setInterval(updateLoveTimer, 1000);
+                updateLoveTimer();
+            }
+
+            function startHeartParticles() {
+                const body = document.body;
+
+                function createHeart() {
+                    const heart = document.createElement('div');
+                    heart.classList.add('heart');
+                    const size = Math.random() * 20 + 10;
+                    heart.style.width = `${size}px`;
+                    heart.style.height = `${size}px`;
+                    heart.style.left = `${Math.random() * 100}vw`;
+                    heart.style.animationDuration = `${Math.random() * 3 + 4}s`;
+                    heart.style.animationDelay = `${Math.random() * 0.5}s`;
+
+                    body.appendChild(heart);
+
+                    heart.addEventListener('animationend', () => {
+                        heart.remove();
+                    });
+                }
+
+                setInterval(createHeart, 800);
+            }
+        });
+    </script>
+</body>
+</html>
