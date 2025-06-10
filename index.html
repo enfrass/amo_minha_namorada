@@ -5,17 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Para o Meu Amor</title>
     <style>
+        /* CSS INLINE - Estilos para a página */
+        :root {
+            /* Definindo tamanhos de fonte base para facilitar a responsividade com rem */
+            font-size: 16px; /* Base para telas maiores */
+        }
+
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #09204e; /* Azul escuro quase roxo */
             color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden; /* Esconde barras de rolagem se os corações saírem da tela */
+            display: flex; /* Agora é um container flex */
+            flex-direction: column; /* Organiza os filhos em coluna */
+            align-items: center; /* CENTRALIZA OS FILHOS HORIZONTALMENTE */
+            min-height: 100vh; /* Garante que o body ocupe a altura total da viewport */
+            overflow-y: auto; /* Permite rolagem no body se o conteúdo exceder a altura da tela */
             position: relative; /* Para o posicionamento absoluto dos corações */
+            font-size: 1rem; /* Base para o corpo do texto */
+            padding: 1.25rem 0; /* Adiciona um padding vertical ao body */
+            box-sizing: border-box; /* Inclui padding na altura do body */
         }
 
         /* Container de Introdução (Botão de Clique) */
@@ -24,37 +33,35 @@
             justify-content: center;
             align-items: center;
             width: 100%;
-            height: 100vh;
+            flex: 1; /* Faz com que ocupe o espaço vertical disponível */
             background-color: #09204e;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 100; /* Garante que fique por cima */
+            position: relative; /* Participa do fluxo normal do layout flexbox */
+            z-index: 100; /* Garante que fique por cima de tudo na introdução */
             transition: opacity 0.5s ease-out; /* Transição para sumir */
         }
 
         #startButton {
-            padding: 18px 40px;
-            font-size: 28px;
+            padding: 1.125rem 2.5rem; /* 18px 40px */
+            font-size: 1.75rem; /* 28px */
             background-color: #ff4d4d; /* Cor vermelha de coração */
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 0.75rem; /* 12px */
             cursor: pointer;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.3); /* 0 6px 12px */
             transition: background-color 0.3s ease, transform 0.2s ease;
             font-weight: bold;
-            letter-spacing: 1px;
+            letter-spacing: 0.0625rem; /* 1px */
         }
 
         #startButton:hover {
             background-color: #ff1a1a;
-            transform: translateY(-2px);
+            transform: translateY(-0.125rem); /* -2px */
         }
 
         #startButton:active {
             transform: translateY(0);
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0.1875rem 0.375rem rgba(0, 0, 0, 0.3); /* 0 3px 6px */
         }
 
         /* Container Principal do Conteúdo */
@@ -62,21 +69,24 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 25px; /* Espaçamento entre os elementos */
-            padding: 20px;
-            max-width: 420px; /* Largura máxima para celulares */
+            gap: 1.5625rem; /* 25px */
+            padding: 1.25rem; /* 20px */
+            max-width: 26.25rem; /* 420px - Largura máxima flexível */
             width: 90%; /* Ocupa 90% da largura disponível */
             box-sizing: border-box;
-            position: relative;
+            position: relative; /* CRIA UM CONTEXTO DE EMPILHAMENTO */
+            z-index: 5; /* GARANTE QUE ESTE CONTAINER ESTEJA ACIMA DOS CORAÇÕES (z-index: 1) */
             opacity: 0; /* Começa invisível para uma transição suave */
-            transform: translateY(20px);
+            transform: translateY(1.25rem); /* 20px - para a animação de entrada */
             transition: opacity 0.5s ease-out, transform 0.5s ease-out;
             pointer-events: none; /* Inativo até ficar visível */
+            flex: 1; /* Faz com que ocupe o espaço vertical disponível */
+            justify-content: center; /* Centraliza o conteúdo verticalmente dentro dele */
         }
 
         #content-container.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0); /* Animação de entrada */
             pointer-events: all; /* Ativo quando visível */
         }
 
@@ -87,22 +97,23 @@
         /* Player de Música */
         .music-player {
             background-color: rgba(255, 255, 255, 0.1); /* Fundo translúcido */
-            border-radius: 18px;
-            padding: 12px 15px;
+            border-radius: 1.125rem; /* 18px */
+            padding: 0.75rem 0.9375rem; /* 12px 15px */
             display: flex;
             align-items: center;
             width: 100%;
-            gap: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(5px); /* Efeito de blur no fundo */
+            gap: 0.9375rem; /* 15px */
+            box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.2); /* 0 4px 15px */
+            backdrop-filter: blur(0.3125rem); /* 5px */
+            /* z-index removido, agora herda do #content-container */
         }
 
         .music-player .album-art img {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
+            width: 3.75rem; /* 60px */
+            height: 3.75rem; /* 60px */
+            border-radius: 0.625rem; /* 10px */
             object-fit: cover;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3); /* 0 2px 8px */
         }
 
         .music-player .song-info {
@@ -111,21 +122,21 @@
 
         .music-player .song-title {
             font-weight: bold;
-            font-size: 1.2em;
-            margin-bottom: 3px;
+            font-size: 1.2em; /* Relativo ao pai .music-player */
+            margin-bottom: 0.1875rem; /* 3px */
             color: #f0f0f0;
         }
 
         .music-player .artist {
-            font-size: 0.95em;
+            font-size: 0.95em; /* Relativo ao pai .music-player */
             color: #c0c0c0;
         }
 
         .music-player .controls {
             display: flex;
             align-items: center;
-            gap: 18px;
-            font-size: 1.6em;
+            gap: 1.125rem; /* 18px */
+            font-size: 1.6em; /* Relativo ao pai .music-player */
             color: #ddd;
         }
 
@@ -139,7 +150,7 @@
         }
 
         .music-player .play-icon {
-            font-size: 2.5em;
+            font-size: 2.5em; /* Relativo ao pai .music-player */
             color: #ff4d4d; /* Vermelho do botão de play */
             cursor: pointer;
             transition: transform 0.2s ease;
@@ -154,10 +165,11 @@
             position: relative;
             width: 100%;
             padding-bottom: 177.77%; /* (16 / 9) * 100% para manter a proporção */
-            border-radius: 25px;
+            border-radius: 1.5625rem; /* 25px */
             overflow: hidden;
             background-color: #333; /* Fundo placeholder */
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0.5rem 1.5625rem rgba(0, 0, 0, 0.4); /* 0 8px 25px */
+            /* z-index removido, agora herda do #content-container */
         }
 
         .main-image-container img {
@@ -174,27 +186,28 @@
         /* Seção do Contador de Amor */
         .love-counter-section {
             text-align: center;
-            padding: 10px;
+            padding: 0.625rem; /* 10px */
             background-color: rgba(255, 255, 255, 0.08); /* Fundo sutil */
-            border-radius: 15px;
+            border-radius: 0.9375rem; /* 15px */
             width: 100%;
             box-sizing: border-box;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2); /* 0 2px 10px */
+            /* z-index removido, agora herda do #content-container */
         }
 
         .love-message {
-            font-size: 1.3em;
+            font-size: 1.3em; /* Relativo ao pai .love-counter-section */
             color: #ff69b4; /* Cor de coração rosa */
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem; /* 8px */
             font-weight: bold;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.03125rem; /* 0.5px */
         }
 
         .timer-display {
-            font-size: 1.7em;
+            font-size: 1.7em; /* Relativo ao pai .love-counter-section */
             font-weight: bold;
             color: #ffffff;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            text-shadow: 0 0 0.3125rem rgba(255, 255, 255, 0.3); /* 0 0 5px */
         }
 
         /* Partículas de Coração */
@@ -202,10 +215,10 @@
             position: absolute;
             background-color: #ff69b4; /* Cor de coração rosa */
             transform: rotate(-45deg);
-            animation: fallDown 5s infinite ease-out; /* Animação para DESCER */
+            animation: fallDown 7s infinite ease-out; /* Animação para DESCER */
             opacity: 0;
             pointer-events: none; /* Não interfere com os cliques */
-            z-index: 0; /* Fica por trás do conteúdo */
+            z-index: 1; /* CORAÇÕES AGORA FICAM EM Z-INDEX 1 (POR BAIXO DO CONTEÚDO PRINCIPAL) */
         }
 
         .heart:before,
@@ -231,7 +244,7 @@
         /* Animação para os corações realmente DESCEREM do topo da tela */
         @keyframes fallDown {
             0% {
-                transform: translateY(-100px) rotate(-45deg); /* Começa 100px acima da tela */
+                transform: translateY(-100px) rotate(-55deg); /* Começa 100px acima da tela */
                 opacity: 0;
             }
             10% { /* Fica visível pouco depois de começar a cair */
@@ -241,30 +254,35 @@
                 opacity: 0.8; /* Permanece visível na maior parte do caminho */
             }
             100% {
-                transform: translateY(100vh) rotate(-45deg); /* Cai completamente para fora da tela */
+                transform: translateY(80vh) rotate(-45deg); /* Cai completamente para fora da tela */
                 opacity: 0; /* Some */
             }
         }
 
-        /* Responsividade Básica (para telas menores que 480px) */
+        /* MEDIA QUERIES PARA RESPONSIVIDADE */
+
+        /* Para telas menores que 480px (celulares pequenos) */
         @media (max-width: 480px) {
+            :root {
+                font-size: 14px; /* Diminui a fonte base para telas muito pequenas */
+            }
             #startButton {
-                padding: 15px 30px;
-                font-size: 24px;
+                padding: 0.9375rem 1.875rem; /* 15px 30px */
+                font-size: 1.5rem; /* 24px */
             }
 
             #content-container {
-                padding: 15px;
-                gap: 20px;
+                padding: 0.9375rem; /* 15px */
+                gap: 1.25rem; /* 20px */
             }
 
             .music-player {
-                padding: 10px 12px;
+                padding: 0.625rem 0.75rem; /* 10px 12px */
             }
 
             .music-player .album-art img {
-                width: 50px;
-                height: 50px;
+                width: 3.125rem; /* 50px */
+                height: 3.125rem; /* 50px */
             }
 
             .music-player .song-title {
@@ -277,7 +295,7 @@
 
             .music-player .controls {
                 font-size: 1.4em;
-                gap: 12px;
+                gap: 0.75rem; /* 12px */
             }
 
             .music-player .play-icon {
@@ -290,6 +308,46 @@
 
             .timer-display {
                 font-size: 1.4em;
+            }
+        }
+
+        /* Para telas médias (entre 481px e 768px - tablets) */
+        @media (min-width: 481px) and (max-width: 768px) {
+            #content-container {
+                max-width: 35rem; /* 560px */
+                padding: 1.5625rem; /* 25px */
+            }
+            .music-player .song-title {
+                font-size: 1.3em;
+            }
+            .music-player .artist {
+                font-size: 1em;
+            }
+            .love-message {
+                font-size: 1.4em;
+            }
+            .timer-display {
+                font-size: 1.8em;
+            }
+        }
+
+        /* Para telas maiores (acima de 769px - desktops) */
+        @media (min-width: 769px) {
+            #content-container {
+                max-width: 30rem; /* 480px */
+                padding: 1.875rem; /* 30px */
+            }
+            .music-player .song-title {
+                font-size: 1.4em;
+            }
+            .music-player .artist {
+                font-size: 1.1em;
+            }
+            .love-message {
+                font-size: 1.5em;
+            }
+            .timer-display {
+                font-size: 2em;
             }
         }
     </style>
