@@ -160,8 +160,8 @@
             padding-bottom: 177.77%;
             border-radius: 1.5625rem;
             overflow: hidden;
-            background-color: #333;
             box-shadow: 0 0.5rem 1.5625rem rgba(0, 0, 0, 0.4);
+            z-index: 2;
         }
 
         .main-image-container img {
@@ -172,17 +172,19 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateX(0);
+            opacity: 1;
         }
 
         .love-counter-section {
             text-align: center;
             padding: 0.625rem;
-            background-color: rgba(255, 255, 255, 0.08);
             border-radius: 0.9375rem;
             width: 100%;
             box-sizing: border-box;
             box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
+            z-index: 2;
         }
 
         .love-message {
@@ -263,7 +265,7 @@
 
             .music-player {
                 padding: 0.625rem 0.75rem;
-                width: 100%; /* Garante que o player ocupe a largura total disponível */
+                width: 100%;
             }
 
             .music-player .album-art img {
@@ -367,7 +369,6 @@
 
     <audio id="backgroundMusic" loop>
         <source src="Tim Bernardes - BB (Garupa de Moto Amarela).mp3" type="audio/mpeg">
-        
         Seu navegador não suporta o elemento de áudio.
     </audio>
 
@@ -385,20 +386,60 @@
             const carouselImages = [
                 '15A26687-6D40-418D-93D4-0E9275AC8BD9.jpg',
                 'WhatsApp Image 2025-06-10 at 15.58.00_4cf1578f.jpg',
-                'WhatsApp Image 2025-06-10 at 15.58.41_e8910e63.jpg'
+                'WhatsApp Image 2025-06-10 at 15.58.41_e8910e63.jpg',
+                'foto4.jpg',
+                'foto5.jpg',
+                'foto6.jpg',
             ];
             let currentImageIndex = 0;
             const carouselImageElement = document.getElementById('carouselImage');
 
             function showNextCarouselImage() {
-                carouselImageElement.style.opacity = '0';
+                // Determine o índice da próxima imagem
+                const nextImageIndex = (currentImageIndex + 1) % carouselImages.length;
+                const nextImageSrc = carouselImages[nextImageIndex];
 
-                setTimeout(() => {
+                // Crie um objeto Image temporário para pré-carregar a próxima imagem
+                const nextImage = new Image();
+                nextImage.src = nextImageSrc;
+
+                // Quando a próxima imagem estiver carregada:
+                nextImage.onload = () => {
+                    // Mova a imagem atual para fora da tela (para a esquerda) e a prepare para desaparecer
+                    // Isso inicia o "empurrão" da imagem antiga
+                    carouselImageElement.style.opacity = '0';
+                    carouselImageElement.style.transform = 'translateX(-100%)';
+
+                    // Após a animação de saída da imagem atual, troque a fonte e inicie a entrada da nova
+                    setTimeout(() => {
+                        carouselImageElement.src = nextImageSrc; // Troca a imagem
+                        carouselImageElement.alt = `Nossas Fotos Especiais - ${nextImageIndex + 1}`;
+
+                        // Reposicione a nova imagem instantaneamente fora da tela, à direita
+                        carouselImageElement.style.transition = 'none'; // Desativa temporariamente a transição
+                        carouselImageElement.style.transform = 'translateX(100%)';
+
+                        // Força o navegador a aplicar o estilo (importante para transição a partir da nova posição)
+                        void carouselImageElement.offsetWidth;
+
+                        // Reabilite a transição e mova a imagem para o centro, fazendo-a aparecer
+                        carouselImageElement.style.transition = 'opacity 0.5s ease-in-out, transform 0.5s ease-in-out';
+                        carouselImageElement.style.opacity = '1';
+                        carouselImageElement.style.transform = 'translateX(0)';
+
+                        // Atualize o índice para a próxima rodada
+                        currentImageIndex = nextImageIndex;
+                    }, 400); // Tempo para a imagem antiga sair (deve ser igual à duração da transição CSS)
+                };
+
+                // Lida com erros de carregamento da imagem (ex: arquivo não encontrado)
+                nextImage.onerror = () => {
+                    console.error(`Erro ao carregar a imagem: ${nextImageSrc}. Pulando para a próxima.`);
+                    // Se uma imagem falhar, tente a próxima para evitar um espaço em branco
                     currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
-                    carouselImageElement.src = carouselImages[currentImageIndex];
-                    carouselImageElement.alt = `Nossas Fotos Especiais - ${currentImageIndex + 1}`;
-                    carouselImageElement.style.opacity = '1';
-                }, 1500);
+                    // Chame recursivamente para tentar carregar a próxima imagem válida após um pequeno atraso
+                    setTimeout(showNextCarouselImage, 1);
+                };
             }
 
             playPauseIcon.addEventListener('click', () => {
@@ -430,8 +471,9 @@
                     });
                     playPauseIcon.textContent = '⏸';
 
+                    // Intervalo para o carrossel (5 segundos entre o início de cada transição)
                     setInterval(showNextCarouselImage, 5000);
-                }, 500);
+                }, 50);
             });
 
             function startLoveCounter() {
@@ -488,7 +530,6 @@
 
                     heart.addEventListener('animationend', () => {
                         heart.remove();
-
                     });
                 }
 
