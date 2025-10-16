@@ -202,7 +202,6 @@
             text-shadow: 0 0 0.3125rem rgba(255, 255, 255, 0.3);
         }
 
-        /* ESTILO ADICIONADO PARA A MENSAGEM FINAL */
         .final-message {
             margin-top: 1rem;
             font-size: 0.9em;
@@ -211,39 +210,30 @@
             line-height: 1.5;
         }
 
+        /* ESTILOS ALTERADOS PARA O CORAÇÃO QUEBRADO */
         .heart {
             position: absolute;
-            background-color: #ff69b4;
-            transform: rotate(-45deg);
+            /* background-color: #ff69b4; -- Removido */
+            /* transform: rotate(-45deg); -- Ajustado para rotação mais aleatória */
             animation: fallDown 7s infinite ease-out;
             opacity: 0;
             pointer-events: none;
             z-index: 1;
+            font-size: 2em; /* Tamanho inicial do símbolo */
+            color: #e74c3c; /* Cor do coração partido */
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Sombra para destaque */
+            line-height: 1; /* Garante que o texto ocupe apenas sua altura */
         }
 
+        /* Remove os pseudo-elementos, pois não são mais necessários para criar a forma do coração */
         .heart:before,
         .heart:after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-color: inherit;
-            border-radius: 50%;
-        }
-
-        .heart:before {
-            top: -50%;
-            left: 0;
-        }
-
-        .heart:after {
-            left: 50%;
-            top: 0;
+            content: none;
         }
 
         @keyframes fallDown {
             0% {
-                transform: translateY(-100px) rotate(-55deg);
+                transform: translateY(-100px) rotate(calc(var(--random-rotation) * 1deg)); /* Rotação inicial mais variável */
                 opacity: 0;
             }
             10% {
@@ -253,7 +243,7 @@
                 opacity: 0.8;
             }
             100% {
-                transform: translateY(100vh) rotate(-45deg);
+                transform: translateY(100vh) rotate(calc(var(--random-rotation) * 1deg)); /* Mantém a rotação durante a queda */
                 opacity: 0;
             }
         }
@@ -306,6 +296,9 @@
             .timer-display {
                 font-size: 1.4em;
             }
+            .heart {
+                font-size: 1.5em; /* Ajusta o tamanho do coração para telas menores */
+            }
         }
 
         @media (min-width: 481px) and (max-width: 768px) {
@@ -324,6 +317,9 @@
             }
             .timer-display {
                 font-size: 1.8em;
+            }
+            .heart {
+                font-size: 2em;
             }
         }
 
@@ -344,13 +340,15 @@
             .timer-display {
                 font-size: 2em;
             }
+            .heart {
+                font-size: 2.5em;
+            }
         }
     </style>
 </head>
 <body>
     <div id="intro-container">
-        <button id="startButton">❤️ Clique Aqui</button>
-    </div>
+        <button id="startButton">💔 Clique Aqui</button> </div>
 
     <div id="content-container" class="hidden">
         <div class="music-player">
@@ -391,8 +389,6 @@
             const backgroundMusic = document.getElementById('backgroundMusic');
             const playPauseIcon = document.getElementById('playPauseIcon');
             
-            // A variável startDate não é mais necessária aqui
-
             const carouselImages = [
                 '15A26687-6D40-418D-93D4-0E9275AC8BD9.jpg',
                 'WhatsApp Image 2025-06-10 at 15.58.00_4cf1578f.jpg',
@@ -460,7 +456,6 @@
                 }, 50);
             });
 
-            // LÓGICA DO CONTADOR ALTERADA PARA VALOR FIXO
             function startLoveCounter() {
                 const dataInicio = new Date('2025-02-01T00:00:00');
                 const dataFim = new Date('2025-09-28T00:00:00');
@@ -479,12 +474,20 @@
                 function createHeart() {
                     const heart = document.createElement('div');
                     heart.classList.add('heart');
-                    const size = Math.random() * 20 + 10;
-                    heart.style.width = `${size}px`;
-                    heart.style.height = `${size}px`;
+                    // Define o conteúdo do coração como o caractere Unicode 💔
+                    heart.textContent = '💔';
+
+                    // O tamanho será controlado por font-size no CSS e aqui pode ser aleatório
+                    const size = Math.random() * 1.5 + 1; // Ajusta o tamanho da fonte para 1.0em a 2.5em
+                    heart.style.fontSize = `${size}em`;
+
                     heart.style.left = `${Math.random() * 100}vw`;
                     heart.style.animationDuration = `${Math.random() * 3 + 4}s`;
                     heart.style.animationDelay = `${Math.random() * 0.5}s`;
+                    
+                    // Adiciona uma propriedade CSS customizada para a rotação aleatória
+                    heart.style.setProperty('--random-rotation', Math.random() * 120 - 60); // entre -60 e 60 graus
+
                     body.appendChild(heart);
                     heart.addEventListener('animationend', () => {
                         heart.remove();
