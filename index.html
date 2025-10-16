@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para o Meu Amor</title>
+    <title>Nossa História</title>
     <style>
         :root {
             font-size: 16px;
@@ -202,6 +202,15 @@
             text-shadow: 0 0 0.3125rem rgba(255, 255, 255, 0.3);
         }
 
+        /* ESTILO ADICIONADO PARA A MENSAGEM FINAL */
+        .final-message {
+            margin-top: 1rem;
+            font-size: 0.9em;
+            color: #c0c0c0;
+            font-style: italic;
+            line-height: 1.5;
+        }
+
         .heart {
             position: absolute;
             background-color: #ff69b4;
@@ -362,8 +371,9 @@
         </div>
 
         <div class="love-counter-section">
-            <p class="love-message">❤️ Eu te amo há:</p>
+            <p class="love-message">Eu te amei por 💔</p>
             <p id="love-timer" class="timer-display"></p>
+            <p class="final-message">"Se quiser voltar, estou aqui. Não é porque o cronômetro parou que significa que não possa recomeçar."</p>
         </div>
     </div>
 
@@ -380,8 +390,8 @@
             const loveTimer = document.getElementById('love-timer');
             const backgroundMusic = document.getElementById('backgroundMusic');
             const playPauseIcon = document.getElementById('playPauseIcon');
-
-            const startDate = new Date(2025, 0, 31, 0, 0, 0);
+            
+            // A variável startDate não é mais necessária aqui
 
             const carouselImages = [
                 '15A26687-6D40-418D-93D4-0E9275AC8BD9.jpg',
@@ -395,49 +405,28 @@
             const carouselImageElement = document.getElementById('carouselImage');
 
             function showNextCarouselImage() {
-                // Determine o índice da próxima imagem
                 const nextImageIndex = (currentImageIndex + 1) % carouselImages.length;
                 const nextImageSrc = carouselImages[nextImageIndex];
-
-                // Crie um objeto Image temporário para pré-carregar a próxima imagem
                 const nextImage = new Image();
                 nextImage.src = nextImageSrc;
-
-                // Quando a próxima imagem estiver carregada:
                 nextImage.onload = () => {
-                    // Mova a imagem atual para fora da tela (para a esquerda) e a prepare para desaparecer
-                    // Isso inicia o "empurrão" da imagem antiga
                     carouselImageElement.style.opacity = '0';
                     carouselImageElement.style.transform = 'translateX(-100%)';
-
-                    // Após a animação de saída da imagem atual, troque a fonte e inicie a entrada da nova
                     setTimeout(() => {
-                        carouselImageElement.src = nextImageSrc; // Troca a imagem
+                        carouselImageElement.src = nextImageSrc;
                         carouselImageElement.alt = `Nossas Fotos Especiais - ${nextImageIndex + 1}`;
-
-                        // Reposicione a nova imagem instantaneamente fora da tela, à direita
-                        carouselImageElement.style.transition = 'none'; // Desativa temporariamente a transição
+                        carouselImageElement.style.transition = 'none';
                         carouselImageElement.style.transform = 'translateX(100%)';
-
-                        // Força o navegador a aplicar o estilo (importante para transição a partir da nova posição)
                         void carouselImageElement.offsetWidth;
-
-                        // Reabilite a transição e mova a imagem para o centro, fazendo-a aparecer
                         carouselImageElement.style.transition = 'opacity 0.5s ease-in-out, transform 0.5s ease-in-out';
                         carouselImageElement.style.opacity = '1';
                         carouselImageElement.style.transform = 'translateX(0)';
-
-                        // Atualize o índice para a próxima rodada
                         currentImageIndex = nextImageIndex;
-                    }, 400); // Tempo para a imagem antiga sair (deve ser igual à duração da transição CSS)
+                    }, 400);
                 };
-
-                // Lida com erros de carregamento da imagem (ex: arquivo não encontrado)
                 nextImage.onerror = () => {
                     console.error(`Erro ao carregar a imagem: ${nextImageSrc}. Pulando para a próxima.`);
-                    // Se uma imagem falhar, tente a próxima para evitar um espaço em branco
                     currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
-                    // Chame recursivamente para tentar carregar a próxima imagem válida após um pequeno atraso
                     setTimeout(showNextCarouselImage, 1);
                 };
             }
@@ -457,65 +446,36 @@
             startButton.addEventListener('click', () => {
                 introContainer.style.opacity = '0';
                 introContainer.style.pointerEvents = 'none';
-
                 setTimeout(() => {
                     introContainer.classList.add('hidden');
                     contentContainer.classList.remove('hidden');
                     contentContainer.classList.add('visible');
-
                     startLoveCounter();
                     startHeartParticles();
-
                     backgroundMusic.play().catch(error => {
                         console.warn("Autoplay bloqueado. A música pode precisar ser iniciada manualmente.", error);
                     });
                     playPauseIcon.textContent = '⏸';
-
-                    // Intervalo para o carrossel (5 segundos entre o início de cada transição)
                     setInterval(showNextCarouselImage, 5000);
                 }, 50);
             });
 
+            // LÓGICA DO CONTADOR ALTERADA PARA VALOR FIXO
             function startLoveCounter() {
-                function updateLoveTimer() {
-                    const now = new Date();
-                    const diff = now.getTime() - startDate.getTime();
+                const dataInicio = new Date('2025-02-01T00:00:00');
+                const dataFim = new Date('2025-09-28T00:00:00');
+                const diferenca = dataFim.getTime() - dataInicio.getTime();
 
-                    const seconds = Math.floor(diff / 1000);
-                    const minutes = Math.floor(seconds / 60);
-                    const hours = Math.floor(minutes / 60);
-                    const days = Math.floor(hours / 24);
+                const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+                const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
 
-                    let years = 0;
-                    let tempDate = new Date(startDate);
-
-                    while (true) {
-                        let nextYearDate = new Date(tempDate.getFullYear() + 1, tempDate.getMonth(), tempDate.getDate(), tempDate.getHours(), tempDate.getMinutes(), tempDate.getSeconds());
-                        if (nextYearDate.getTime() <= now.getTime()) {
-                            years++;
-                            tempDate = nextYearDate;
-                        } else {
-                            break;
-                        }
-                    }
-
-                    const diffAfterYears = now.getTime() - tempDate.getTime();
-                    const daysAfterYears = Math.floor(diffAfterYears / (1000 * 60 * 60 * 24));
-
-                    const remainingHours = hours % 24;
-                    const remainingMinutes = minutes % 60;
-                    const remainingSeconds = seconds % 60;
-
-                    loveTimer.textContent = `${years} anos, ${daysAfterYears} dias, ${remainingHours} horas, ${remainingMinutes} minutos e ${remainingSeconds} segundos`;
-                }
-
-                setInterval(updateLoveTimer, 1000);
-                updateLoveTimer();
+                loveTimer.textContent = `${dias} dias, ${horas} horas, ${minutos} minutos e ${segundos} segundos`;
             }
 
             function startHeartParticles() {
                 const body = document.body;
-
                 function createHeart() {
                     const heart = document.createElement('div');
                     heart.classList.add('heart');
@@ -525,14 +485,11 @@
                     heart.style.left = `${Math.random() * 100}vw`;
                     heart.style.animationDuration = `${Math.random() * 3 + 4}s`;
                     heart.style.animationDelay = `${Math.random() * 0.5}s`;
-
                     body.appendChild(heart);
-
                     heart.addEventListener('animationend', () => {
                         heart.remove();
                     });
                 }
-
                 setInterval(createHeart, 800);
             }
         });
